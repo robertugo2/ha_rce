@@ -10,7 +10,9 @@
                     "low_price_cutoff": "Low Price CUTOFF Percent",
                     "number_of_cheapest_hours": "Liczba następujących po sobie najtańszych godzin",
                     "cheapest_price_mode": "Wybór trybu wyznaczania najtańszych godzin",
-                    "price_multiplier": "Mnożnik ceny"
+                    "price_multiplier": "Mnożnik ceny",
+                    "energy_unit": "Jednostka energii",
+                    "price_cap": "Ustaw cenę minimalną na zero"
                 }
             }
         }
@@ -25,7 +27,9 @@
                     "low_price_cutoff": "Low Price CUTOFF Percent",
                     "number_of_cheapest_hours": "Liczba następujących po sobie najtańszych godzin",
                     "cheapest_price_mode": "Wybór trybu wyznaczania najtańszych godzin",
-                    "price_multiplier": "Mnożnik ceny"
+                    "price_multiplier": "Mnożnik ceny",
+                    "energy_unit": "Jednostka energii",
+                    "price_cap": "Ustaw cenę minimalną na zero"
                 }
             }
         }

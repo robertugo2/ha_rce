@@ -15,12 +15,13 @@ from datetime import datetime, timedelta, timezone
 from .const import (
     DOMAIN, _LOGGER, SCAN_INTERVAL,
     CURRENCY,
-    PRICE_TYPE,
     CONF_CUSTOM_PEAK_HOURS_RANGE, DEFAULT_CUSTOM_PEAK_HOURS_RANGE,
     CONF_LOW_PRICE_CUTOFF, DEFAULT_LOW_PRICE_CUTOFF,
     CONF_NUMBER_OF_CHEAPEST_HOURS, DEFAULT_NUMBER_OF_CHEAPEST_HOURS,
     CONF_PRICE_MODE, DEFAULT_PRICE_MODE,
     CONF_PRICE_MULTIPLIER, DEFAULT_PRICE_MULTIPLIER,
+    CONF_UNIT, DEFAULT_UNIT, UNIT_TO_MULTIPLIER,
+    CONF_PRICE_CAP, DEFAULT_PRICE_CAP
 )
 
 
@@ -37,8 +38,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: config_entries.Co
     cheapest_hours = config_entry.options.get(CONF_NUMBER_OF_CHEAPEST_HOURS, DEFAULT_NUMBER_OF_CHEAPEST_HOURS)
     price_mode = config_entry.options.get(CONF_PRICE_MODE, DEFAULT_PRICE_MODE)
     price_multiplier = config_entry.options.get(CONF_PRICE_MULTIPLIER, DEFAULT_PRICE_MULTIPLIER)
+    unit = config_entry.options.get(CONF_UNIT, DEFAULT_UNIT)
+    price_cap = config_entry.options.get(CONF_PRICE_CAP, DEFAULT_PRICE_CAP)
 
-    async_add_entities([RCESensor(custom_peak, low_price_cutoff, cheapest_hours, price_mode, price_multiplier)])
+    async_add_entities([RCESensor(custom_peak, low_price_cutoff, cheapest_hours, price_mode, price_multiplier, unit, price_cap)])
 
 
 class RCESensor(SensorEntity):
@@ -50,7 +53,16 @@ class RCESensor(SensorEntity):
     _attr_state_class = SensorStateClass.TOTAL
     _attr_has_entity_name = True
 
-    def __init__(self, custom_peak: str, low_price_cutoff: int, cheapest_hours: int, price_mode: str, price_multiplier: float) -> None:
+    def __init__(
+            self,
+            custom_peak: str,
+            low_price_cutoff: int,
+            cheapest_hours: int,
+            price_mode: str,
+            price_multiplier: float,
+            unit: str,
+            price_cap: bool
+    ) -> None:
         """Initialize Forecast.Solar sensor."""
         _LOGGER.info("RCE sensor")
         super().__init__()
@@ -76,8 +88,10 @@ class RCESensor(SensorEntity):
         self.cheapest_hours = cheapest_hours
         self.price_mode = price_mode
         self.price_multiplier = price_multiplier
+        self.unit = unit
+        self.price_cap = price_cap
 
-        _LOGGER.debug(f"Config: {custom_peak},{low_price_cutoff},{cheapest_hours},{price_mode},{price_multiplier}")
+        _LOGGER.debug(f"Config: {custom_peak},{low_price_cutoff},{cheapest_hours},{price_mode},{price_multiplier},{unit},{price_cap}")
 
     def _update(self, day: dict):
         """Set attrs"""
@@ -149,14 +163,9 @@ class RCESensor(SensorEntity):
         }
 
     @property
-    def unit(self) -> str:
-        """Unit"""
-        return PRICE_TYPE
-
-    @property
     def unit_of_measurement(self) -> str:
         """Return the unit of measurement this sensor expresses itself in."""
-        return "%s/%s" % (CURRENCY, PRICE_TYPE)
+        return "%s/%s" % (CURRENCY, self.unit)
 
     @property
     def extra_state_attributes(self):
@@ -218,9 +227,13 @@ class RCESensor(SensorEntity):
             data_pse = []
             for item in json_data["value"]:
                 if item['udtczas_oreb'].replace(' - ',':').split(':')[1] == "00":
+                    tariff = float(item['rce_pln'])
+                    tariff = round(tariff * self.price_multiplier, 3)
+                    tariff = tariff * UNIT_TO_MULTIPLIER[self.unit]
+                    tariff = max(0, tariff) if self.price_cap else tariff
                     i = {
                         "start" : item['doba'] + " " + item['udtczas_oreb'].split(' - ')[0], # + ":00",
-                        "tariff" : float(item['rce_pln']) * self.price_multiplier,
+                        "tariff" : tariff,
                         "low_price" : False,
                     }
                     data_pse.append(i)
