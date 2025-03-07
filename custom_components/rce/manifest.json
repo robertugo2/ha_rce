@@ -1,12 +1,13 @@
 {
   "domain": "rce",
   "name": "RCE",
-  "codeowners": ["@JaCeK2511"],
+  "codeowners": ["@robertugo2"],
   "config_flow": true,
+  "single_config_entry": true,
   "dependencies": [],
-  "documentation": "https://github.com/jacek2511/ha_rce/",
+  "documentation": "https://github.com/robertugo2/ha_rce/",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/jacek2511/ha_rce//issues",
+  "issue_tracker": "https://github.com/robertugo2/ha_rce/issues",
   "requirements": [],
-  "version": "1.0.4"
+  "version": "1.1.0"
 }
