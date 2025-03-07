@@ -1,3 +1,9 @@
+### *Fork of https://github.com/jacek2511/ha_rce. Thanks @jacek2511 for your work!*
+Improved:
+ * Simplify the config flow
+ * Add new parameter: price multiplier - thanks to that it is possible to include 23% VAT for an exported energy (the multiplier is set by default to 1.23)
+# homeassistant-rce
+
 [![GitHub Latest Release][releases_shield]][latest_release] [![License][license-shield]](LICENSE) [![GitHub All Releases][downloads_total_shield]][releases] [![GH-last-commit][latest_commit]][commits] [![HACS][hacsbadge]][hacs]
 <!-- [![usage_badge](https://img.shields.io/badge/dynamic/json?label=Usage&query=ha_rce.total&url=https://analytics.home-assistant.io/custom_integrations.json)](https://analytics.home-assistant.io) -->
 
@@ -53,7 +59,7 @@ You can install the plugin via HACS using the following steps
 
 # Configuration
 All integration settings are available in the options in the integration configuration panel.
-![image](https://github.com/jacek2511/ha_rce/assets/112733566/f9e834b5-1322-435d-9ac3-e15b3b187cb9)
+![image](https://github.com/user-attachments/assets/228cb8c6-c410-47a5-b0f6-41ddf82e2de4)
 
 # Available components
 
