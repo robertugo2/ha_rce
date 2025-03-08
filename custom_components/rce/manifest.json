@@ -3,11 +3,11 @@
   "name": "RCE",
   "codeowners": ["@robertugo2"],
   "config_flow": true,
-  "single_config_entry": true,
   "dependencies": [],
   "documentation": "https://github.com/robertugo2/ha_rce/",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/robertugo2/ha_rce/issues",
   "requirements": [],
-  "version": "1.1.1"
+  "single_config_entry": true,
+  "version": "1.1.2"
 }
