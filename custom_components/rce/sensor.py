@@ -100,7 +100,7 @@ class RCESensor(SensorEntity):
             _LOGGER.debug("No data for today, unable to set attrs")
             return
         price = []
-        price = (([item['tariff'] for item in day]))
+        price = (([item['price'] for item in day]))
 
         self._average = round(mean(price), 2)
         self._min = min(price)
@@ -113,7 +113,7 @@ class RCESensor(SensorEntity):
 
     def _low_price_hours(self, day: dict):
         price = []
-        price = (([item['tariff'] for item in day]))
+        price = (([item['price'] for item in day]))
 # MODE: LOW PRICE CUTOFF
         if self.price_mode == 'LOW PRICE CUTOFF':
             for i, price_hour in enumerate(price):
@@ -130,14 +130,14 @@ class RCESensor(SensorEntity):
                     self._min_average = round(current_average, 2)
                     min_average_index = i
                 if i + self.cheapest_hours == len(price):
-                    for k in range (self.cheapest_hours): 
+                    for k in range (self.cheapest_hours):
                         day[min_average_index + k]['low_price'] = True
                     return
 # MODE: CHEAPEST HOURS (NOT CONSECUTIVE)
         elif self.price_mode == 'CHEAPEST HOURS (NOT CONSECUTIVE)':
-            day_copy = sorted(day, key=lambda d: d['tariff'])
-            for k in range (self.cheapest_hours): 
-                m = day_copy[k]['start'][-5:-3]
+            day_copy = sorted(day, key=lambda d: d['price'])
+            for k in range (self.cheapest_hours):
+                m = day_copy[k]['hour'][-5:-3]
                 day[int(m)]['low_price'] = True
         return
     
@@ -185,24 +185,26 @@ class RCESensor(SensorEntity):
                 "currency": CURRENCY,
                 "custom_peak_range" : self.custom_peak,
                 "low_price_cutoff": self.low_price_cutoff * 100,
-                "today": self._today,
-                "tomorrow": self._tomorrow,
+                "raw_today": self._today,
+                "raw_tomorrow": self._tomorrow,
+                "use_cent": False,
+                "tomorrow_valid": True if self._tomorrow else False,
             }
             return attrs
     
     def _update_current_price(self, today) -> None:
         """update the current price (price this hour)"""
         hour = int(datetime.now().strftime('%H'))
-        return today[hour]['tariff']
+        return today[hour]['price']
 
     def _update_next_price(self, today, tomorrow) -> None:
         """update the next price (price next hour)"""
         if today:
             hour = int(datetime.now().strftime('%H'))
             if hour < 23:
-              return today[hour + 1]['tariff']
+              return today[hour + 1]['price']
             else:
-              return tomorrow[0]['tariff']
+              return tomorrow[0]['price']
     
     async def sday(self, dday: int):
         """fetch day data"""
@@ -227,21 +229,20 @@ class RCESensor(SensorEntity):
             data_pse = []
             for item in json_data["value"]:
                 if item['udtczas_oreb'].replace(' - ',':').split(':')[1] == "00":
-                    tariff = float(item['rce_pln'])
-                    tariff = round(tariff * self.price_multiplier, 3)
-                    tariff = tariff * UNIT_TO_MULTIPLIER[self.unit]
-                    tariff = max(0, tariff) if self.price_cap else tariff
+                    price = float(item['rce_pln'])
+                    price = round(price * self.price_multiplier, 3)
+                    price = price * UNIT_TO_MULTIPLIER[self.unit]
+                    price = max(0, price) if self.price_cap else price
                     i = {
-                        "start" : item['doba'] + " " + item['udtczas_oreb'].split(' - ')[0], # + ":00",
-                        "tariff" : tariff,
-                        "low_price" : False,
+                        "hour": item['doba'] + " " + item['udtczas_oreb'].split(' - ')[0], # + ":00",
+                        "price": price,
+                        "low_price": False,
                     }
                     data_pse.append(i)
             if not data_pse:
                 _LOGGER.debug("No data for a day, unable to set attrs")
 
             return data_pse
-
 
     async def full_update(self):
         self.pse_response = None
