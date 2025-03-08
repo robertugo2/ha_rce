@@ -2,6 +2,7 @@
 Improved:
  * Simplify the config flow
  * Add new parameter: price multiplier - thanks to that it is possible to include 23% VAT for an exported energy (the multiplier is set by default to 1.23)
+ * Attributes are compatible with https://github.com/MTrab/energidataservice so it is possible to use this integration in https://github.com/springfall2008/batpred
 # homeassistant-rce
 
 [![GitHub Latest Release][releases_shield]][latest_release] [![License][license-shield]](LICENSE) [![GitHub All Releases][downloads_total_shield]][releases] [![GH-last-commit][latest_commit]][commits] [![HACS][hacsbadge]][hacs]
