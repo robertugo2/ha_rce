@@ -262,7 +262,7 @@ class RCESensor(SensorEntity):
             return
         if now.strftime('%H') == self.last_network_pull.strftime('%H'):
             return
-        self._attr_native_value = self._update_current_price(self.extra_state_attributes["today"])
+        self._attr_native_value = self._update_current_price(self.extra_state_attributes["raw_today"])
         self.last_network_pull = now
         if not self.extra_state_attributes["tomorrow"] and int(now.strftime('%H')) > 14: 
             await self.full_update()
