@@ -12,6 +12,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.device_registry import DeviceEntryType
 
 from datetime import datetime, timedelta, timezone
+from dateutil import tz
 from .const import (
     DOMAIN, _LOGGER, SCAN_INTERVAL,
     CURRENCY,
@@ -233,8 +234,10 @@ class RCESensor(SensorEntity):
                     price = round(price * self.price_multiplier, 3)
                     price = price * UNIT_TO_MULTIPLIER[self.unit]
                     price = max(0, price) if self.price_cap else price
+                    hour = datetime.fromisoformat(item['doba'] + " " + item['udtczas_oreb'].split(' - ')[0])
+                    hour = hour.astimezone(tz.gettz('Europe/Warsaw'))  # RCE prices are valid only for Poland
                     i = {
-                        "hour": item['doba'] + " " + item['udtczas_oreb'].split(' - ')[0], # + ":00",
+                        "hour": hour,
                         "price": price,
                         "low_price": False,
                     }
