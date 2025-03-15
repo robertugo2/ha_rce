@@ -23,32 +23,46 @@ Example configuration for the cards
 graph_span: 24h
 span:
   start: day
-header:
-  show: true
-  title: Rynkowa Cena Energii Elektrycznej [zł/MWh]
-  colorize_states: true
 now:
   show: true
   label: Teraz
   color: var(--secondary-color)
 yaxis:
-  - decimals: 0
+  - decimals: 3
+    id: Ceny
+    apex_config:
+      tickAmount: 5
+  - decimals: 1
+    id: Prognoza
+    opposite: true
     apex_config:
       tickAmount: 5
 series:
-  - entity: sensor.rynkowa_cena_energii_elektrycznej
+  - entity: sensor.rynkowa_cena_energii_elektrycznej_rynkowa_cena_energi_elektrycznej
+    yaxis_id: Ceny
     type: column
-    name: Cena Rynkowa Energii Elektrycznej
-    float_precision: 2
+    name: Cena
+    float_precision: 0
     data_generator: |
-      return entity.attributes.today.map((start, index) => {
-        return [new Date(start["start"]).getTime(), entity.attributes.today[index]['tariff']];
-      });</code></pre>
+      return entity.attributes.raw_today.map((start, index) => {
+        return [new Date(start["hour"]).getTime(), entity.attributes.raw_today[index]['price']];
+      });
+  - entity: sensor.solcast_pv_forecast_prognoza_na_dzisiaj
+    yaxis_id: Prognoza
+    type: line
+    name: Prognoza
+    float_precision: 1
+    data_generator: |
+      var today = entity.attributes.detailedForecast.map((start, index) => {
+        return [new Date(start["period_start"]).getTime(), entity.attributes.detailedForecast[index]["pv_estimate"]];
+      });
+      var data = today
+      return data;</code></pre>
 
 # Install
 
 ### Using [HACS](https://hacs.xyz/) (recommended)
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jacek2511&repository=ha_rce&category=Integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=robertugo2&repository=ha_rce&category=Integration)
 
 You can install the plugin via HACS using the following steps
 
@@ -56,7 +70,7 @@ You can install the plugin via HACS using the following steps
 2. Click Integrations
 3. Clik the three dots on the top right
 4. Click "Custom repositories"
-5. Add https://github.com/jacek2511/ha_rce/ and a category of your choice
+5. Add https://github.com/robertugo2/ha_rce/ and a category of your choice
 
 # Configuration
 All integration settings are available in the options in the integration configuration panel.
@@ -75,28 +89,33 @@ All integration settings are available in the options in the integration configu
     off_peak_2 - average energy price from 20:00 to 00:00
     peak - average energy price from 08:00 to 20:00
     min_average - minimum average energy price in the range of x consecutive hours; where x is configurable in options
+    unit - energy unit, default: kWh
+    currency - default: PLN
     custom_peak - average energy price over the range of hours defined by custom_peak_range
     min - minimum daily energy price
     max - maximum daily energy price
     mean - median daily energy price
     custom_peak_range - configurable range of hours for which the custom_peak attribute is calculated
     low_price_cutoff - percentage of average price to set the low price attribute (low_price = hour_price < average * low_price_cutoff)
-    today - today's hourly prices in the format
-      - start: 2024-06-28 00:00
-        tariff: 604.2
+    use_cent - in case of PLN, true means that prices are in gr and if false in zloty
+    tomorrow_valid - indicates, if tomorrow's prices were fetched sucessfully
+    unit_of_measurement - currency / unit
+    raw_today - today's hourly prices in the format
+      - hour: 2024-06-28 00:00
+        price: 604.2
         low_price: false
-      - start: 2024-06-28 01:00
-        tariff: 488.93
+      - hour: 2024-06-28 01:00
+        price: 488.93
         low_price: false
-    tomorrow - tomorrow's hourly prices
+    raw_tomorrow - tomorrow's hourly prices
   ```
 
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg
-[latest_release]: https://github.com/jacek2511/ha_rce/releases/latest
-[releases_shield]: https://img.shields.io/github/release/jacek2511/ha_rce.svg?style=popout
-[releases]: https://github.com/jacek2511/ha_rce/releases
-[downloads_total_shield]: https://img.shields.io/github/downloads/jacek2511/ha_rce/total
-[license-shield]: https://img.shields.io/github/license/jacek2511/ha_rce
-[latest_commit]: https://img.shields.io/github/last-commit/jacek2511/ha_rce.svg?style=flat-square
+[latest_release]: https://github.com/robertugo2/ha_rce/releases/latest
+[releases_shield]: https://img.shields.io/github/release/robertugo2/ha_rce.svg?style=popout
+[releases]: https://github.com/robertugo2/ha_rce/releases
+[downloads_total_shield]: https://img.shields.io/github/downloads/robertugo2/ha_rce/total
+[license-shield]: https://img.shields.io/github/license/robertugo2/ha_rce
+[latest_commit]: https://img.shields.io/github/last-commit/robertugo2/ha_rce.svg?style=flat-square
 [commits]: https://github.com/jack2511/ha_rce/commits/master
