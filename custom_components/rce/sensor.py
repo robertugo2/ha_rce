@@ -190,6 +190,7 @@ class RCESensor(SensorEntity):
                 "raw_tomorrow": self._tomorrow,
                 "use_cent": False,
                 "tomorrow_valid": True if self._tomorrow else False,
+                "tariffs": {0: 0},  # dummy entry to supress warnings in PredBat
             }
             return attrs
     
