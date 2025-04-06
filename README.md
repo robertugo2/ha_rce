@@ -118,4 +118,4 @@ All integration settings are available in the options in the integration configu
 [downloads_total_shield]: https://img.shields.io/github/downloads/robertugo2/ha_rce/total
 [license-shield]: https://img.shields.io/github/license/robertugo2/ha_rce
 [latest_commit]: https://img.shields.io/github/last-commit/robertugo2/ha_rce.svg?style=flat-square
-[commits]: https://github.com/jack2511/ha_rce/commits/master
+[commits]: https://github.com/robertugo2/ha_rce/commits/master
