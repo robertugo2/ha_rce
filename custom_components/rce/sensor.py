@@ -27,7 +27,7 @@ from .const import (
 )
 
 
-URL = "https://api.raporty.pse.pl/api/rce-pln?$filter=doba eq '{day}'"
+URL = "https://v1.api.raporty.pse.pl/api/rce-pln?$filter=doba eq '{day}'"
 SENTINEL = object()
 
 
